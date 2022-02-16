@@ -75,6 +75,8 @@ def console(msg):
 
 
 def debug(msg):
+    if msg.startswith('Starting new HTTPS connection'):
+        return
     msg = f'[{getframeinfo(currentframe().f_back.f_back).filename}:{getframeinfo(currentframe().f_back.f_back).lineno}] {msg}'
     log(logging.DEBUG, msg)
 
