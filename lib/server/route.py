@@ -91,3 +91,15 @@ def get_switch_device_status(device_id):
     result_dict: OrderedDict = msg
     result_value = {"on": True} if result_dict.get('switch') == 1 else {"on": False}
     return jsonify(result_value)
+
+
+@app.route('/device/connection/<device_id>')
+def get_connection_of_device(device_id):
+    result, msg = get_device_status_from_pm(device_id)
+    if not result:
+        log.error(msg)
+        abort(400, msg)
+    result_dict: OrderedDict = msg
+    result_value = "disconnected" if result_dict.get('switch') == 0 else "connected"
+    return result_value
+
