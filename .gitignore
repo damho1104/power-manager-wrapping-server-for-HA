@@ -4,3 +4,7 @@ config.json
 logs/
 
 .idea/
+
+dist/
+
+build/

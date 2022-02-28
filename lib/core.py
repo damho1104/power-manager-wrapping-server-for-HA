@@ -4,8 +4,10 @@ import os
 import sys
 import csv
 import mimetypes
+import atexit
 
 from flask import *
+from cheroot.wsgi import Server
 
 import lib
 from lib import ConfigLoader, FileUtil, log
@@ -14,6 +16,7 @@ from lib import ConfigLoader, FileUtil, log
 # !! flask app
 app = Flask('pm-server', root_path=FileUtil.get_path(), static_folder=FileUtil.get_path(os.path.join('html', 'static')))
 app.config['TEMPLATES_AUTO_RELOAD'] = True  # reload templates if the cached version does not matches the template file.
+server: Server = None
 
 TYPES_FILENAME = 'mimetypes.csv'
 if getattr(sys, 'frozen', False):
@@ -35,8 +38,25 @@ for line in lines:
 
 
 def run():
+    global server
     lib.configuration = ConfigLoader()
-    app.run(host=lib.configuration.get_ip(), port=lib.configuration.get_port())
+    # app.run(host=lib.configuration.get_ip(), port=lib.configuration.get_port())
+    server = Server(bind_addr=(lib.configuration.get_ip(), int(lib.configuration.get_port())),
+                    wsgi_app=app,
+                    numthreads=100)
+    try:
+        atexit.register(shutdown_server)
+        server.start()
+    except KeyboardInterrupt:
+        server.stop()
+
+
+def shutdown_server():
+    global server
+    try:
+        server.stop()
+    except:
+        pass
 
 
 @app.before_request
