@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 class SingleTone:
     __instance = None
 
@@ -21,6 +23,6 @@ class SingleTone:
         pass
 
     def __new__(cls, *args, **kwargs):
-        assert cls.__instance is None, 'Don not create an instance of this class multiple times.'
+        assert cls.__instance is None, 'Do not create an instance of this class multiple times.'
         cls.__instance = object.__new__(cls)
         return cls.__instance
