@@ -5,18 +5,22 @@ import sys
 import csv
 import mimetypes
 import atexit
+import uvicorn
 
-from flask import *
-from cheroot.wsgi import Server
+# from flask import *
+# from cheroot.wsgi import Server
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import PlainTextResponse, FileResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 import lib
 from lib import ConfigLoader, FileUtil, log
 
-
 # !! flask app
-app = Flask('pm-server', root_path=FileUtil.get_path(), static_folder=FileUtil.get_path(os.path.join('html', 'static')))
-app.config['TEMPLATES_AUTO_RELOAD'] = True  # reload templates if the cached version does not matches the template file.
-server: Server = None
+# app = Flask('pm-server', root_path=FileUtil.get_path(), static_folder=FileUtil.get_path(os.path.join('html', 'static')))
+# app.config['TEMPLATES_AUTO_RELOAD'] = True  # reload templates if the cached version does not matches the template file.
+# server: Server = None
+app = FastAPI(title="pm-wrap-server")
 
 TYPES_FILENAME = 'mimetypes.csv'
 if getattr(sys, 'frozen', False):
@@ -38,17 +42,12 @@ for line in lines:
 
 
 def run():
-    global server
-    lib.configuration = ConfigLoader()
-    # app.run(host=lib.configuration.get_ip(), port=lib.configuration.get_port())
-    server = Server(bind_addr=(lib.configuration.get_ip(), int(lib.configuration.get_port())),
-                    wsgi_app=app,
-                    numthreads=100)
-    try:
-        atexit.register(shutdown_server)
-        server.start()
-    except KeyboardInterrupt:
-        server.stop()
+    uvicorn.run("lib:app",
+                host=lib.configuration.get_ip(),
+                port=int(lib.configuration.get_port()),
+                reload=True,
+                workers=100,
+                log_level='info')
 
 
 def shutdown_server():
@@ -59,34 +58,41 @@ def shutdown_server():
         pass
 
 
-@app.before_request
-def limit_remote_addr():
+@app.middleware('http')
+async def limit_remote_addr(request: Request, call_next):
     ip_white_list = ConfigLoader().get_ip_whitelist()
-    if request.remote_addr not in ip_white_list:
-        abort(403)  # Forbidden
+    client_ip = str(request.client.host)
+    if client_ip not in ip_white_list:
+        raise HTTPException(status_code=403)  # Forbidden
+    # Proceed if IP is allowed
+    return await call_next(request)
 
 
-@app.after_request
-def append_common_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = '*'
-    response.headers['Access-Control-Expose-Headers'] = 'Content-Disposition'
-    return response
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request, exc):
+    return PlainTextResponse(str(exc.detail), status_code=exc.status_code)
+
+# @app.after_request
+# def append_common_headers(response):
+#     response.headers['Access-Control-Allow-Origin'] = '*'
+#     response.headers['Access-Control-Allow-Methods'] = '*'
+#     response.headers['Access-Control-Allow-Headers'] = '*'
+#     response.headers['Access-Control-Expose-Headers'] = 'Content-Disposition'
+#     return response
 
 
-@app.errorhandler(404)
-def page_not_found(error):
-    return str(error), 404
+# @app.errorhandler(404)
+# def page_not_found(error):
+#     return str(error), 404
+#
+#
+# @app.errorhandler(Exception)
+# def handle_exception(e):
+#     log.error('An error occurred.', e)
+#     return str(e), 500 if not hasattr(e, 'code') else e.code
 
 
-@app.errorhandler(Exception)
-def handle_exception(e):
-    log.error('An error occurred.', e)
-    return str(e), 500 if not hasattr(e, 'code') else e.code
-
-
-@app.route('/favicon.ico')
+@app.get('/favicon.ico')
 def favicon():
     return send_resource('favicon.ico')
 
@@ -94,7 +100,7 @@ def favicon():
 # @app.route('/<path:path>', methods=['GET'])
 # def static_proxy(path):
 #     return send_from_directory(FileUtil.get_path('html'), path)
-
-
+#
+#
 def send_resource(*path):
-    return send_file(FileUtil.get_path('html', *path))
+    return FileResponse(FileUtil.get_path('html', *path))

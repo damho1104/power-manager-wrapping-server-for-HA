@@ -5,7 +5,11 @@ import time
 
 import requests
 import lib
-from flask import *
+
+from fastapi import HTTPException
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+
 from lib.core import app
 from lib import ConfigLoader, log
 from collections import OrderedDict
@@ -44,61 +48,60 @@ def get_device_status_from_pm(device_id: str):
     return request_to_power_manager_server(url, device_id)
 
 
-@app.route('/device/status/<device_id>')
-def get_device_status(device_id):
+@app.get('/device/status/{device_id}')
+def get_device_status(device_id: str):
     exclude_key_list = ['dayWatts', 'hourWatts', 'monthWatts', 'yearWatts']
     result, msg = get_device_status_from_pm(device_id)
     if not result:
         log.error(msg)
-        abort(400, msg)
+        raise HTTPException(status_code=400, detail=msg)
     result_dict: OrderedDict = msg
     for key in exclude_key_list:
         if result_dict.get(key, False):
             del result_dict[key]
+    return JSONResponse(content=result_dict)
 
-    return jsonify(result_dict)
 
-
-@app.route('/device/switch/<device_id>/On')
-def get_device_on(device_id):
+@app.get('/device/switch/{device_id}/On')
+def get_device_on(device_id: str):
     ip, port = get_server_ip_and_port(device_id)
     url = f'https://{ip}:{port}/device/switch/{device_id}/On'
     result, msg = request_to_power_manager_server(url, device_id)
     if not result:
         log.error(msg)
-        abort(400, msg)
-    return jsonify(msg)
+        raise HTTPException(status_code=400, detail=msg)
+    return JSONResponse(content=msg)
 
 
-@app.route('/device/switch/<device_id>/Off')
-def get_device_off(device_id):
+@app.get('/device/switch/{device_id}/Off')
+def get_device_off(device_id: str):
     ip, port = get_server_ip_and_port(device_id)
     url = f'https://{ip}:{port}/device/switch/{device_id}/Off'
     result, msg = request_to_power_manager_server(url, device_id)
     if not result:
         log.error(msg)
-        abort(400, msg)
-    return jsonify(msg)
+        raise HTTPException(status_code=400, detail=msg)
+    return JSONResponse(content=msg)
 
 
-@app.route('/device/switch/<device_id>/status')
-def get_switch_device_status(device_id):
+@app.get('/device/switch/{device_id}/status')
+def get_switch_device_status(device_id: str):
     time.sleep(2)
     result, msg = get_device_status_from_pm(device_id)
     if not result:
         log.error(msg)
-        abort(400, msg)
+        raise HTTPException(status_code=400, detail=msg)
     result_dict: OrderedDict = msg
     result_value = {"on": True} if result_dict.get('switch') == 1 else {"on": False}
-    return jsonify(result_value)
+    return JSONResponse(content=result_value)
 
 
-@app.route('/device/connection/<device_id>')
-def get_connection_of_device(device_id):
+@app.get('/device/connection/{device_id}')
+def get_connection_of_device(device_id: str):
     result, msg = get_device_status_from_pm(device_id)
     if not result:
         log.error(msg)
-        abort(400, msg)
+        raise HTTPException(status_code=400, detail=msg)
     result_dict: OrderedDict = msg
     result_value = "disconnected" if result_dict.get('switch') == 0 else "connected"
     return result_value
