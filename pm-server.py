@@ -11,7 +11,6 @@ def main():
 
 
 if __name__ == '__main__':
-    log.init()
     if not main():
         sys.exit(1)
     sys.exit(0)

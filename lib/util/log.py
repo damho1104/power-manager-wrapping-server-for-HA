@@ -28,7 +28,7 @@ os.makedirs(LOG_FOLDER, exist_ok=True)
 LOG_FILE_PATH = os.path.join(LOG_FOLDER, f'pm-server.{datetime.datetime.now().strftime("%Y%m%d%H%M%S.%f")}.log')
 
 
-class FileLogFormatterMQTT(logging.Formatter):
+class FileLogFormatter(logging.Formatter):
     def __init__(self):
         logging.Formatter.__init__(self,
                                    fmt='[%(asctime)s] [%(levelname)-8s] [%(thread)-5d] %(message)s')
@@ -62,7 +62,7 @@ def init():
         maxBytes=4 * 1024 * 1024,
         backupCount=2)
     file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(FileLogFormatterMQTT())
+    file_handler.setFormatter(FileLogFormatter())
     logging.getLogger().addHandler(file_handler)
 
 
@@ -75,8 +75,6 @@ def console(msg):
 
 
 def debug(msg):
-    if msg.startswith('Starting new HTTPS connection'):
-        return
     msg = f'[{getframeinfo(currentframe().f_back.f_back).filename}:{getframeinfo(currentframe().f_back.f_back).lineno}] {msg}'
     log(logging.DEBUG, msg)
 

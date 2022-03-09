@@ -68,6 +68,11 @@ async def limit_remote_addr(request: Request, call_next):
     return await call_next(request)
 
 
+@app.on_event('startup')
+async def startup_event():
+    log.init()
+
+
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request, exc):
     return PlainTextResponse(str(exc.detail), status_code=exc.status_code)
