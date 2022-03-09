@@ -11,7 +11,7 @@ Home Assistant 서버는 같은 내부망에 존재한다고 가정합니다.
   - PowerManager 로컬 서버가 1 대인 경우 device 항목 생략 가능  
   - PowerManager 로컬 서버가 2 대 이상인 경우 default 서버에 붙은 device 정보는 입력하지 않으셔도 됩니다.  
   - PowerManager 로컬 서버가 2 대 이상인 경우 인증서는 같다는 가정하에 동작합니다.
-```json
+```text
 {
   "ip": "[HOST_IP]",
   "port": "[HOST_PORT]",
@@ -158,7 +158,7 @@ http://[SERVER_IP]:[PORT]/device/switch/[DEVICE_ID]/Off
 ```text
 http://[SERVER_IP]:[PORT]/device/switch/[DEVICE_ID]/status
 ```
-```json
+```text
 {
     "on": [BOOLEAN 값]
 }
