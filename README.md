@@ -4,6 +4,10 @@ Home Assistant 서버는 같은 내부망에 존재한다고 가정합니다.
 윈도우 OS 만 지원합니다.  
 [PowerManager 로컬 서버 by css5831](https://github.com/SeongSikChae/PowerManagerServer/releases)  
 
+## Release
+### v1.0.0
+- HA 와 연동가능한 API 서버 릴리즈
+
 ## 1. config.json 생성
 - 서버를 실행시킬 host ip 와 port 정보를 입력합니다.
 - server 항목에 실행 중인 PowerManager 로컬 서버의 정보를 입력합니다.
