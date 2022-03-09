@@ -47,6 +47,7 @@ def run():
                 port=int(lib.configuration.get_port()),
                 reload=True,
                 workers=100,
+                access_log=False,
                 log_level='info')
 
 
