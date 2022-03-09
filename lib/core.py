@@ -16,10 +16,6 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 import lib
 from lib import ConfigLoader, FileUtil, log
 
-# !! flask app
-# app = Flask('pm-server', root_path=FileUtil.get_path(), static_folder=FileUtil.get_path(os.path.join('html', 'static')))
-# app.config['TEMPLATES_AUTO_RELOAD'] = True  # reload templates if the cached version does not matches the template file.
-# server: Server = None
 app = FastAPI(title="pm-wrap-server")
 
 TYPES_FILENAME = 'mimetypes.csv'
@@ -53,6 +49,7 @@ def run():
 
 @app.middleware('http')
 async def limit_remote_addr(request: Request, call_next):
+    log.info(f'CLIENT: {request.client.host}:{request.client.port} / URL: {request.url}')
     ip_white_list = ConfigLoader().get_ip_whitelist()
     client_ip = str(request.client.host)
     if client_ip not in ip_white_list:
@@ -64,6 +61,12 @@ async def limit_remote_addr(request: Request, call_next):
 @app.on_event('startup')
 async def startup_event():
     log.init()
+    log.info('START Server')
+
+
+@app.on_event('shutdown')
+async def shutdown_event():
+    log.info('STOP Server')
 
 
 @app.exception_handler(StarletteHTTPException)
