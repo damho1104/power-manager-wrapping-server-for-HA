@@ -4,4 +4,4 @@ from .config.loader import *
 from .server import *
 from .core import run
 
-configuration: ConfigLoader = None
+configuration: ConfigLoader = ConfigLoader()
