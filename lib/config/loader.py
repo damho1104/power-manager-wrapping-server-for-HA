@@ -30,17 +30,24 @@ class ConfigLoader:
 
     def get_default_server_dict(self) -> OrderedDict:
         if self.default_server is None:
-            for server_name in self.get_server_name_list():
-                server_info: OrderedDict = self.get_servers().get(server_name)
-                if server_info.get("default", False):
-                    self.default_server = server_info
-                    break
-            if self.default_server is None:
-                self.default_server = self.config_dict.get(self.get_server_name_list()[0])
+            server_name_list = self.get_server_name_list()
+            if not server_name_list:
+                self.default_server = self.config_dict
+            else:
+                for server_name in server_name_list:
+                    server_info: OrderedDict = self.get_servers().get(server_name)
+                    if server_info.get("default", False):
+                        self.default_server = server_info
+                        break
+                if self.default_server is None:
+                    self.default_server = self.config_dict.get(self.get_server_name_list()[0])
         return self.default_server
 
     def get_server_name_list(self) -> list:
-        return self.get_servers().keys()
+        server_dict = self.get_servers()
+        if not server_dict:
+            return []
+        return server_dict.keys()
 
     def is_cert_mode(self, server_name: str = None, device_id: str = None):
         if device_id is not None:
@@ -51,21 +58,18 @@ class ConfigLoader:
 
     def _get_server_info(self, key: str, default: str,
                          server_name: str,
-                         device_id: str,
-                         use_default_server: bool):
+                         device_id: str):
         if device_id is not None:
             server_name = self.get_server_name_by_device_id(device_id)
         if server_name and server_name in self.get_server_name_list():
             return self.get_servers().get(server_name).get(key)
-        if use_default_server:
-            return self.default_server.get(key)
-        return default
+        return self.get_default_server_dict().get(key, default)
 
-    def get_power_manager_server_ip(self, server_name: str = None, device_id: str = None, use_default: bool = None):
-        return self._get_server_info('power_manager_server_ip', '192.168.0.91', server_name, device_id, use_default)
+    def get_power_manager_server_ip(self, server_name: str = None, device_id: str = None):
+        return self._get_server_info('power_manager_server_ip', '192.168.0.91', server_name, device_id)
 
-    def get_power_manager_server_port(self, server_name: str = None, device_id: str = None, use_default: bool = None):
-        return self._get_server_info('power_manager_server_port', '443', server_name, device_id, use_default)
+    def get_power_manager_server_port(self, server_name: str = None, device_id: str = None):
+        return self._get_server_info('power_manager_server_port', '443', server_name, device_id)
 
     def get_client_cert_path(self) -> str:
         return self.config_dict.get('certs', {}).get('client_cert_path', '')
