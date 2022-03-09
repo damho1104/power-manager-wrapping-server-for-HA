@@ -50,14 +50,6 @@ def run():
                 log_level='info')
 
 
-def shutdown_server():
-    global server
-    try:
-        server.stop()
-    except:
-        pass
-
-
 @app.middleware('http')
 async def limit_remote_addr(request: Request, call_next):
     ip_white_list = ConfigLoader().get_ip_whitelist()
