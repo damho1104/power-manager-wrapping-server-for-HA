@@ -2,6 +2,9 @@
 css5831 께서 구축해주신 서버를 기반으로 한 Home Assistant 연동가능 API 서버 입니다.  
 Home Assistant 서버는 같은 내부망에 존재한다고 가정합니다.  
 윈도우 OS 만 지원합니다.  
+
+## Prerequsite
+- css5831 님의 PowerManager 서버 구축 필수(다시 한 번 감사합니다!!)  
 [PowerManager 로컬 서버 by css5831](https://github.com/SeongSikChae/PowerManagerServer/releases)  
 
 ## Release
@@ -48,7 +51,7 @@ Home Assistant 서버는 같은 내부망에 존재한다고 가정합니다.
 }
 ```
 ### Example
-#### Case 1. PowerManager 로컬 서버(192.168.0.4, 443) 가 1대인 경우
+#### Case 1. PowerManager 로컬 서버(192.168.0.4, 443) 가 1 대인 경우
 ```json
 {
   "ip": "192.168.0.3",
@@ -204,6 +207,7 @@ http://[SERVER_IP]:[PORT]/device/status/[DEVICE_ID]
 ...
 sensor: !include sensors.yaml
 switch: !include switches.yaml
+binary_sensor: !include binary_sensors.yaml
 ...
 ```
 ### switches.yaml
@@ -258,5 +262,29 @@ switch: !include switches.yaml
     value_template: >-
       {% set watt = value_json.currentWatt %}
         {{ watt }}
+  ...
+  ```
+### binary_sensors.yaml  
+```yaml
+  ...
+  - platform: command_line
+    name: [name, 띄어쓰기 없이]
+    command: curl -s http://[SERVER_IP]:[PORT]/device/connection/[DEVICE_ID]
+    device_class: connectivity
+    payload_on: "connected"
+    payload_off: "disconnected"
+    scan_interval: 20
+  ...
+```
+- 예제
+  ```yaml
+  ...
+  - platform: command_line
+    name: main_multitab_connection
+    command: curl -s http://192.168.0.3:18080/device/connection/cd5678fgh67c
+    device_class: connectivity
+    payload_on: "connected"
+    payload_off: "disconnected"
+    scan_interval: 20
   ...
   ```
