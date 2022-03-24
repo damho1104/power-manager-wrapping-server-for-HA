@@ -1,0 +1,6 @@
+requests==2.27.1
+colorama==0.4.4
+pyinstaller==4.9
+fastapi
+uvicorn
+pydantic

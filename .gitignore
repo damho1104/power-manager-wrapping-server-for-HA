@@ -1,2 +1,12 @@
 
 config.json
+**/__pycache__/**
+logs/
+
+.idea/
+
+dist/
+
+build/
+
+pmws-v1.0.0.zip
