@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os
 import sys
 import csv
 import mimetypes
-import atexit
 import uvicorn
 
-# from flask import *
-# from cheroot.wsgi import Server
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import PlainTextResponse, FileResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -73,35 +69,11 @@ async def shutdown_event():
 async def http_exception_handler(request, exc):
     return PlainTextResponse(str(exc.detail), status_code=exc.status_code)
 
-# @app.after_request
-# def append_common_headers(response):
-#     response.headers['Access-Control-Allow-Origin'] = '*'
-#     response.headers['Access-Control-Allow-Methods'] = '*'
-#     response.headers['Access-Control-Allow-Headers'] = '*'
-#     response.headers['Access-Control-Expose-Headers'] = 'Content-Disposition'
-#     return response
-
-
-# @app.errorhandler(404)
-# def page_not_found(error):
-#     return str(error), 404
-#
-#
-# @app.errorhandler(Exception)
-# def handle_exception(e):
-#     log.error('An error occurred.', e)
-#     return str(e), 500 if not hasattr(e, 'code') else e.code
-
 
 @app.get('/favicon.ico')
 def favicon():
     return send_resource('favicon.ico')
 
 
-# @app.route('/<path:path>', methods=['GET'])
-# def static_proxy(path):
-#     return send_from_directory(FileUtil.get_path('html'), path)
-#
-#
 def send_resource(*path):
     return FileResponse(FileUtil.get_path('html', *path))

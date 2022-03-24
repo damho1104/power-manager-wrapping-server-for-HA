@@ -121,11 +121,35 @@ gh5218fgg62d
 }
 ```
 ## 2. 실행
+### 1. Windows OS
+- pmws-v1.0.0.zip 압축 파일을 다운로드 받습니다.
 - 다운로드 받은 파일의 압축을 풀고 파일이 위치하는 곳에서 cmd 창을 켜서 아래와 같은 방법으로 실행합니다.
 ```shell
 > cd [압축 푼 디렉토리 경로]
 > pm-server.exe
 ```
+### 2. Others
+- Python 3.9 기반에서 작성되었습니다.
+- 해당 프로젝트를 clone 후 디렉토리로 이동합니다.
+- 패키지를 다운로드 받습니다.
+  ```shell
+  $ pip3 install -r requirements.txt
+  ```
+- 이후부터는 case 1 혹은 2 를 수행하시면 됩니다.
+#### Case 1. Build
+- 아래 명령과 같이 실행합니다.
+  ```shell
+  $ pyinstaller pm-server.spec
+  ```
+- dist 디렉토리로 이동하여 아래 명령과 같이 실행합니다.
+  ```shell
+  $ ./pm-server
+  ```
+#### Case 2. Run script
+- 아래 명령과 같이 실행합니다.
+  ```shell
+  $ python3 pm-server.py
+  ```
 ## 3. API 설명
 ### 스위치
 #### 1. 스위치 ON
@@ -204,6 +228,7 @@ http://[SERVER_IP]:[PORT]/device/status/[DEVICE_ID]
 ...
 sensor: !include sensors.yaml
 switch: !include switches.yaml
+binary_sensor: !include binary_sensors.yaml
 ...
 ```
 ### switches.yaml
@@ -258,5 +283,29 @@ switch: !include switches.yaml
     value_template: >-
       {% set watt = value_json.currentWatt %}
         {{ watt }}
+  ...
+  ```
+### binary_sensors.yaml  
+```yaml
+  ...
+  - platform: command_line
+    name: [name, 띄어쓰기 없이]
+    command: curl -s http://[SERVER_IP]:[PORT]/device/connection/[DEVICE_ID]
+    device_class: connectivity
+    payload_on: "connected"
+    payload_off: "disconnected"
+    scan_interval: 20
+  ...
+```
+- 예제
+  ```yaml
+  ...
+  - platform: command_line
+    name: main_multitab_connection
+    command: curl -s http://192.168.0.3:18080/device/connection/cd5678fgh67c
+    device_class: connectivity
+    payload_on: "connected"
+    payload_off: "disconnected"
+    scan_interval: 20
   ...
   ```

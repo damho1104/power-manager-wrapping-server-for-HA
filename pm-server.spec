@@ -1,4 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
+import shutil
 
 
 block_cipher = None
@@ -49,3 +50,5 @@ exe = EXE(pyz,
           target_arch=None,
           codesign_identity=None,
           entitlements_file=None )
+
+shutil.copy('res/mimetypes.csv', 'dist/mimetypes.csv')

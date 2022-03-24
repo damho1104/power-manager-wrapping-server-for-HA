@@ -10,10 +10,6 @@ from collections import OrderedDict
 class FileUtil:
     @staticmethod
     def get_path(*paths):
-        """
-        if it runs as executable, return the absolute path from the directory located the executable file.
-        Otherwise, return the absolute path from the project root directory.
-        """
         if getattr(sys, 'frozen', False):
             root_dir = os.path.dirname(sys.executable)
         else:

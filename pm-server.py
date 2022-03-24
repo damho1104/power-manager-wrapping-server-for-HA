@@ -3,7 +3,6 @@
 import sys
 import lib
 import multiprocessing
-from lib.util import log
 
 
 def main():

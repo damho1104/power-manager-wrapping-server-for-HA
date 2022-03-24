@@ -8,10 +8,9 @@ import lib
 
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 
 from lib.core import app
-from lib import ConfigLoader, log
+from lib import log
 from collections import OrderedDict
 
 device_status_lock = multiprocessing.Value('i', 0)
