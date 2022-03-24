@@ -5,6 +5,8 @@ Home Assistant 서버는 같은 내부망에 존재한다고 가정합니다.
 [PowerManager 로컬 서버 by css5831](https://github.com/SeongSikChae/PowerManagerServer/releases)  
 
 ## Release
+### v1.0.1
+- python 코드 공개
 ### v1.0.0
 - HA 와 연동가능한 API 서버 릴리즈
 
