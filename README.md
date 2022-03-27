@@ -1,7 +1,9 @@
 # Power Manager Wrapping Server for HA
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fdamho1104%2Fpower-manager-wrapping-server-for-HA&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Github&edge_flat=false)](https://hits.seeyoufarm.com)
+![Python](https://img.shields.io/badge/Python-3776AB.svg?&style=flat&logo=Python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)  
 css5831 께서 구축해주신 서버를 기반으로 한 Home Assistant 연동가능 API 서버 입니다.  
 Home Assistant 서버는 같은 내부망에 존재한다고 가정합니다.  
-윈도우 OS 만 지원합니다.  
 [PowerManager 로컬 서버 by css5831](https://github.com/SeongSikChae/PowerManagerServer/releases)  
 
 ## Release
