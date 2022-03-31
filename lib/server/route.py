@@ -102,6 +102,7 @@ def get_connection_of_device(device_id: str):
         log.error(msg)
         raise HTTPException(status_code=400, detail=msg)
     result_dict: OrderedDict = msg
-    result_value = "disconnected" if result_dict.get('switch') == 0 else "connected"
+    switch_flag = result_dict.get('switch')
+    result_value = "disconnected" if switch_flag == 0 or switch_flag == 3 else "connected"
     return result_value
 
